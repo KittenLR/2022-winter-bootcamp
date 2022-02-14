@@ -27,9 +27,7 @@ assert not is_prime(0)
 # Output [3,4,5,6,7,1,2]
 
 def rotate(ar: [int], d: int) -> [int]:
-    ar_left = ar[0: d % len(ar)]
-    ar_right = ar[d % len(ar): ]
-    return ar_right + ar_left
+    return ar[0: d % len(ar)] + ar[d % len(ar):]
 
 
 # DO NOT ALTER BELOW.
@@ -62,10 +60,9 @@ assert selection_sort([[1, 100], [2, 70], [3, 95], [4, 66], [5, 98]]) == [[4, 66
 # Q4. Convert a list of Tuples into Dictionary
 # tip: copy operation - copy by value, copy by reference
 
-def convert(tup: (any), di: {any, any}) -> None: 
+def convert(tup: any, di: {any, any}) -> None:
     for i in range(0, len(tup), 2):
-        di.setdefault(tup[i], tup[i+1])
-    pass
+        di[tup[i]] = tup[i+1]
     # Do NOT RETURN di, EDIT IN-PLACE
     
     
