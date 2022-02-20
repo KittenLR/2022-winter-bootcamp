@@ -2,13 +2,12 @@
 # 注意 - Copy this file and rename as scheduled_investment_{first_name}.py then complete code with a PR.
 # 注意 - Copy this file and rename as scheduled_investment_{first_name}.py then complete code with a PR.
 
+""" DO NOT EDIT (BEGIN) """
 import pandas as pd
 import datetime as dt
 
 RAW_DATA_NAME = "data/QQQ.csv"
 ANALYSIS_RESULT_DATA_NAME = "data/QQQ-result.csv"
-
-""" DO NOT EDIT (BEGIN) """
 
 
 def read_data() -> pd.DataFrame:
@@ -46,8 +45,10 @@ def calculate_scheduled_investment(data: pd.DataFrame) -> ():
         #   然后总需要根据open_price计算asset, 并且加入assets
         if is_monday(date):
             positions.append(positions[-1] + 10)
+            cost.append(cost[-1] + shares * open_price)
         else:
             positions.append(positions[-1])
+            cost.append(cost[-1])
         assets.append(open_price * positions[-1])
     print(len(positions))
     return positions, cost, assets
@@ -62,9 +63,16 @@ def export_result() -> float:
     # 在这里调用 calculate_scheduled_investment, 并且赋值
     # 到asset 和cost.
     # 最后返回十年的年化率
-    asset = [1]  # replace
-    cost = [1]  # replace
+    df1 = read_data()
+    position = pd.Series(calculate_scheduled_investment(df1))[0]
+    cost = pd.Series(calculate_scheduled_investment(df1))[1]
+    asset = pd.Series(calculate_scheduled_investment(df1))[2]
+    df2 = pd.DataFrame({'position': position, 'cost': cost, 'asset': asset})
+    df3 = pd.merge(df1, df2, left_index=True, right_index=True)
+    write_data(df3, ANALYSIS_RESULT_DATA_NAME)
+    write_data(df3, 'haojin_QQQ-result.csv')
     return annual_return(10, asset[-1] / cost[-1])  # 10 years
+
 
 
 # -- TODO: Part 2 (END)
@@ -72,4 +80,4 @@ def export_result() -> float:
 
 if __name__ == '__main__':
     print(calculate_scheduled_investment(read_data()))
-    # print("Investment Return: ", export_result())
+    print("Investment Return: ", export_result())

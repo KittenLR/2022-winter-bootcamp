@@ -2,10 +2,15 @@
 # Copy this file and rename as assignment2-yourname.py
 
 # Q1. Given a positive integer N. The task is to write a Python program to check if the number is prime or not.
-from typing import Tuple
+import math
 
 
 def is_prime(n: int) -> bool:
+    if n <= 1:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
     return True
 
 
@@ -22,7 +27,7 @@ assert not is_prime(0)
 # Output [3,4,5,6,7,1,2]
 
 def rotate(ar: [int], d: int) -> [int]:
-    return []
+    return ar[0: d % len(ar)] + ar[d % len(ar):]
 
 
 # DO NOT ALTER BELOW.
@@ -35,6 +40,15 @@ assert rotate([1,2,3], 4) == [2,3,1]
 # Input students would be a list of [student #, score], sort by score ascending order.
 
 def selection_sort(arr: [[int]]) -> [[int]]:
+    for i in range(len(arr) - 1):
+        index_min = i
+        for j in range(i + 1, len(arr)):
+            if arr[j][1] < arr[index_min][1]:
+                index_min = j
+        if i != index_min:
+            temp = arr[index_min]
+            arr[index_min] = arr[i]
+            arr[i] = temp
     return arr
 
 
@@ -46,8 +60,9 @@ assert selection_sort([[1, 100], [2, 70], [3, 95], [4, 66], [5, 98]]) == [[4, 66
 # Q4. Convert a list of Tuples into Dictionary
 # tip: copy operation - copy by value, copy by reference
 
-def convert(tup: (any), di: {any, any}) -> None: 
-    pass
+def convert(tup: any, di: {any, any}) -> None:
+    for i in range(0, len(tup), 2):
+        di[tup[i]] = tup[i+1]
     # Do NOT RETURN di, EDIT IN-PLACE
     
     
@@ -64,7 +79,7 @@ assert expected_dict == {'key1': 'val1', 'key2': 'val2'}
 # provided an example of slow version of bsearch_slow with O(n) time complecity. 
 # your solution should be faster than bsearch_slow
 
-def bsearch_slow(arr: [int], target: int) -> tuple[int, int]:
+def bsearch_slow(arr: [int], target: int) -> (int):
     left = -1
     right = -1
     for i in range(len(arr)):
@@ -74,14 +89,39 @@ def bsearch_slow(arr: [int], target: int) -> tuple[int, int]:
             right = i
         if i == len(arr) - 1:
             right = len(arr) - 1
-    return left, right
+    return (left, right)
+
 
 def create_arr(count: int, dup: int) -> [int]:
     return [dup for i in range(count)]
-        
+
+
 # Complete this    
-def bsearch(arr: [int], target: int) -> tuple[int, int]:
-    return -1, -1
+def bsearch(arr: [int], target: int) -> (int):
+    left = 0
+    right = len(arr) -1
+    res = [-1, -1]
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] > target:
+            right = mid -1
+        elif arr[mid] <target:
+            left = mid + 1
+        else:
+            res[0] = mid
+            right = mid - 1
+    left = 0
+    right = len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] > target:
+            right = mid -1
+        elif arr[mid] <target:
+            left = mid + 1
+        else:
+            res[1] = mid
+            left = mid + 1
+    return tuple(res)
 
 assert bsearch_slow(create_arr(10000, 5), 5) == (0, 9999)
 assert bsearch(create_arr(1000, 5), 5) == (0, 999)
@@ -89,26 +129,32 @@ assert bsearch(create_arr(1000, 5), 5) == (0, 999)
 
 import timeit
 # slow version rnning 100 times = ? seconds
-timeit.timeit(lambda: bsearch_slow(create_arr(10000, 5), 5), number=100)
+print(timeit.timeit(lambda: bsearch_slow(create_arr(10000, 5), 5), number=100))
 # add your version and compare if faster.
-
+print(timeit.timeit(lambda: bsearch(create_arr(10000, 5), 5), number=100))
 
 # Q6. Working with Lists
 # (1). Consider the function extract_and_apply(l, p, f) shown below, 
-# which extracts the elements of a list l satisfying a boolean predicate p, applies a function f to each such element, and returns the result. 
+# which extracts the elements of a list l satisfying a boolean predicate p, applies a function f to each such element, and returns the result.
 def extract_and_apply(l, p, f): 
     result = [] 
 
     for x in l: 
         if p(x): 
             result.append(f(x)) 
-    return result 
+    return result
+
+
 # Rewrite extract_and_apply(l, p, f) in one line using a list comprehension. 
+def extract_and_apply(l, p, f):
+    return [f(x) for x in l if p(x)]
+
 
 # (2). [5 points] Write a function concatenate(seqs) that returns a list containing the concatenation of the elements of the input sequences. 
 # Your implementation should consist of a single list comprehension, and should not exceed one line. 
-concatenate([[1, 2], [3, 4]])
-# [1, 2, 3, 4]
+def concatenate(seqs):
+    return [elements for item in seqs for elements in item]
 
-concatenate(["abc", (0, [0])])
-# ['a', 'b', 'c', 0, [0]]
+
+assert concatenate([[1, 2], [3, 4]]) == [1, 2, 3, 4]
+assert concatenate(["abc", (0, [0])]) == ['a', 'b', 'c', 0, [0]]
